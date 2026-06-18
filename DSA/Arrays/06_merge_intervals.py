@@ -79,9 +79,67 @@ def merge_intervals_optimal(intervals):
 
     return merged
 
+# ─────────────────────────────────────────────
+# APPROACH 3 — OPTIMAL (Track Current Interval)
+# ─────────────────────────────────────────────
+"""
+1. Sort intervals by start time.
+2. Keep the current merged interval in variables
+   (start, end).
+3. If the next interval starts after end, store the
+   current interval and start a new one.
+4. Otherwise, merge by extending end.
+
+Trace ([[1,3],[2,6],[8,10],[15,18]]):
+
+  sort → [[1,3],[2,6],[8,10],[15,18]]
+
+  current = [1,3]
+
+  [2,6]:
+    2 <= 3 → overlap
+    end = max(3,6) = 6
+    current = [1,6]
+
+  [8,10]:
+    8 > 6 → no overlap
+    add [1,6]
+    current = [8,10]
+
+  [15,18]:
+    15 > 10 → no overlap
+    add [8,10]
+    current = [15,18]
+
+  add last interval [15,18]
+
+Result:
+  [[1,6],[8,10],[15,18]]
+
+Time  : O(n log n)
+Space : O(n)
+"""
+
+def merge_intervals_optimal_v2(intervals):
+    intervals.sort()
+
+    merged = []
+    start, end = intervals[0]
+
+    for s, e in intervals[1:]:
+        if s > end:
+            merged.append([start, end])
+            start, end = s, e
+        else:
+            end = max(end, e)
+
+    merged.append([start, end])
+    return merged
+
 
 # ─────────────────────────────────────────────
 if __name__ == "__main__":
     intervals = [[1, 3], [2, 6], [8, 10], [15, 18]]
     print(merge_intervals_brute(intervals))    # [[1,6],[8,10],[15,18]]
     print(merge_intervals_optimal(intervals))  # [[1,6],[8,10],[15,18]]
+    print(merge_intervals_optimal_v2(intervals))  # [[1,6],[8,10],[15,18]]
